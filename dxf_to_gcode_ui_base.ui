@@ -6,24 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1111</width>
-    <height>809</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>DXF to Gcode Vectoriel Converter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize">
     <size>
-     <width>1111</width>
-     <height>756</height>
+     <width>640</width>
+     <height>480</height>
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -53,14 +59,21 @@
      </layout>
     </item>
     <item row="0" column="0">
-     <widget class="QWidget" name="w_plot" native="true"/>
+     <widget class="QWidget" name="w_plot" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
     <item row="0" column="1" rowspan="2">
      <layout class="QVBoxLayout" name="vl_0">
       <item>
        <widget class="QTreeWidget" name="tv">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -140,7 +153,14 @@
      </layout>
     </item>
     <item row="1" column="0" rowspan="2">
-     <widget class="QWidget" name="w_console" native="true"/>
+     <widget class="QWidget" name="w_console" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -149,7 +169,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1111</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
