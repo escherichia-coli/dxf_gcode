@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from dxf_to_gcode_ui import UI_DXF_to_Gcode
+from ui.dxf_to_gcode_ui import UI_DXF_to_Gcode
 import sys
 
 if __name__ == "__main__":
