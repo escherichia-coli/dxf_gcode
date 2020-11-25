@@ -1,6 +1,6 @@
-"build"
-"dist"
-"Archives"
-"DXF"
-"Gcodes"
-"nmodel"
+build/
+dist/
+Archives/
+DXF/
+Gcodes/
+nmodel/
