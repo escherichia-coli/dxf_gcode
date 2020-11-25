@@ -2,5 +2,5 @@ build/
 dist/
 Archives/
 DXF/
-Gcodes/
+Gcode/
 nmodel/
