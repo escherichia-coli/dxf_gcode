@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from ui.export_to_gcode_options_base import Ui_dxf_to_gcode_options
-from ui.lib.g_code_process import GcodeProcess
+from ui.bin.g_code_process import GcodeProcess
 
 
 class UI_DXF_to_Gcode_options(Ui_dxf_to_gcode_options):

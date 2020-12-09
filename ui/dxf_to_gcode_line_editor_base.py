@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:/Python_Project/dxf_gcode/dxf_to_gcode_line_editor_base.ui'
+# Form implementation generated from reading ui file 'D:/Python_Project/dxf_gcode/ui/dxf_to_gcode_line_editor_base.ui'
 #
 # Created by: PyQt5 UI code generator 5.13.1
 #
@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_line_editor_base(object):
     def setupUi(self, line_editor_base):
         line_editor_base.setObjectName("line_editor_base")
-        line_editor_base.setWindowModality(QtCore.Qt.WindowModal)
+        line_editor_base.setWindowModality(QtCore.Qt.NonModal)
         line_editor_base.resize(289, 223)
         self.gridLayout_2 = QtWidgets.QGridLayout(line_editor_base)
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -77,9 +77,9 @@ class Ui_line_editor_base(object):
         self.label_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName("label_4")
         self.gridLayout_4.addWidget(self.label_4, 2, 1, 1, 1)
-        self.pushButton_3 = QtWidgets.QPushButton(self.groupBox)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout_4.addWidget(self.pushButton_3, 3, 2, 1, 1)
+        self.btn_move_pnt = QtWidgets.QPushButton(self.groupBox)
+        self.btn_move_pnt.setObjectName("btn_move_pnt")
+        self.gridLayout_4.addWidget(self.btn_move_pnt, 3, 2, 1, 1)
         self.gridLayout_2.addWidget(self.groupBox, 1, 1, 1, 1)
 
         self.retranslateUi(line_editor_base)
@@ -99,7 +99,7 @@ class Ui_line_editor_base(object):
         self.groupBox.setTitle(_translate("line_editor_base", "Move"))
         self.label_3.setText(_translate("line_editor_base", "   x"))
         self.label_4.setText(_translate("line_editor_base", "y"))
-        self.pushButton_3.setText(_translate("line_editor_base", "Move"))
+        self.btn_move_pnt.setText(_translate("line_editor_base", "Move"))
 
 
 if __name__ == "__main__":

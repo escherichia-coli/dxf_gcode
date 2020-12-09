@@ -66,7 +66,8 @@ class DXFtoGCODE_Geometry(object):
 
         return np.array(offset_lines).astype('float')
 
-    def setThickness(self, polyline, thickness, side='alt'):
+    def setThickness(self, polyline, thickness, side='alt', offset=0.1):
+        self.offset = offset
         offset_lines = []
         offset_list = np.ones(int(thickness / self.offset))
         if side == 'pos':

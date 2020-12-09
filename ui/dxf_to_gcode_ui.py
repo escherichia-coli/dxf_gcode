@@ -10,11 +10,12 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
 import pyqtgraph as pg
 import pyqtgraph.console
 import numpy as np
+import time
 from ui.dxf_to_gcode_ui_base import Ui_dxf_to_gcode
 import ezdxf
 import sys
-from ui.lib.g_code_process import GcodeProcess
-from ui.lib.dxf_to_gcode_geometry import DXFtoGCODE_Geometry
+from ui.bin.g_code_process import GcodeProcess
+from ui.bin.dxf_to_gcode_geometry import DXFtoGCODE_Geometry
 from ui.dxf_to_gcode_line_editor import UI_LineEditor
 from ui.export_to_gcode_options import UI_DXF_to_Gcode_options
 from ui.file_dialog.file_dialog_open_dxf import UI_OpenDXF
@@ -76,6 +77,8 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
         self.lines_color = []
         self.test = 0
         self.deleted_lines = []
+        self.c_hfile = open('console.history', 'w')
+        self.c_hfile.close()
 
         self.gcode_processer = GcodeProcess()
         self.geo_tool = DXFtoGCODE_Geometry()
@@ -93,6 +96,7 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
         self.plot_layout = QtWidgets.QVBoxLayout(self.w_plot)
         self.plot_layout.addWidget(self.plotW)
         self.plotW.plot([0, 0, 200, 200, 0], [0, 200, 200, 0, 0], pen='g')
+        self.plotW.setAspectLocked(lock=True, ratio=1)
 
         self.c = pg.console.ConsoleWidget(namespace=namespace)
         self.console_layout = QtWidgets.QVBoxLayout(self.w_console)
@@ -108,6 +112,8 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
         self.actionOptions.triggered.connect(self.__defineExportOptions)
         self.actionImport_dxf.triggered.connect(self.importFunc)
         self.actionModify.triggered.connect(self.modify)
+        self.actionSetOffsetThickness.triggered.connect(self.__setTh)
+        self.actionSetOffsetValue.triggered.connect(self.__setOffVal)
 
         self.btn_group.clicked.connect(self.groupFunc)
         self.btn_export_gcode.clicked.connect(self.exportGcode)
@@ -124,9 +130,9 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
 
         self.drawing_pnt = []
 
-        # self.modify()
-
         self.btn_offset.setText("Offset (" + str(self.th) + ' - ' + str(self.offset) + ')')
+
+        print(self.c.input.history)
 
     def quit(self):
         self.__window_widget.close()
@@ -201,7 +207,7 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
                 # print(self.drawing[i].opts.get('pen'))
                 if self.drawing[i].opts.get('pen') != 'w':
                     self.drawing[i].setPen(self.lines_color[i])
-            self.c.write('\nLine(s) ' + str(self.line_selection) + ' currently selected')
+            self.c.write('Line(s) ' + str(self.line_selection) + ' currently selected\n')
 
             for i in self.line_selection:
                 for j in range(self.root.childCount()):
@@ -213,12 +219,34 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
                         if int(self.root.child(j).text(0).split(' ')[-1]) == i:
                             self.drawing[i].setPen('b')
 
+    def __setTh(self):
+        self.c.write('Set the offset thickness and press enter \n')
+        print(self.c.input.history[0])
+        h_len = len(self.c.input.history)
+        while self.c.input.history[0] != '' or len(self.c.input.history) == h_len:
+            QtCore.QCoreApplication.processEvents()
+
+        self.th = float(self.c.input.history[1])
+        self.c.write('Offset thickness set to ' + str(self.th) + '\n')
+        self.btn_offset.setText("Offset (" + str(self.th) + ' - ' + str(self.offset) + ')')
+
+    def __setOffVal(self):
+        self.c.write('Set the offset value and press enter \n')
+        h_len = len(self.c.input.history)
+        while self.c.input.history[0] != '' or len(self.c.input.history) == h_len:
+            QtCore.QCoreApplication.processEvents()
+
+        self.offset = float(self.c.input.history[1])
+        self.c.write('Offset value set to ' + str(self.offset) + '\n')
+        self.btn_offset.setText("Offset (" + str(self.th) + ' - ' + str(self.offset) + ')')
+
     def setLineSelected(self, add_root=True):
         self.__setLineSelected()
-        self.__updateTree(add_root)
+        # self.__updateTree(add_root=add_root)
 
     def lineClicked(self, c_line):
         n_curve = c_line.opts.get('data')
+        self.ui_line_editor.le_selected_line.setText('Line n° ' + str(n_curve))
         self.line_selection.append(int(n_curve))
 
         for i in range(self.root.childCount()):
@@ -253,10 +281,19 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
             line = QTreeWidgetItem(['Line n° ' + str(i)])
             self.root.addChild(line)
             i = i + 1
+        if self.tv.topLevelItem(0) is not None:
+            if self.tv.topLevelItem(0).text(0) != self.file_name:
+                print('Delete')
+                self.drawing = []
+                self.plotW.clear()
+                self.plotW.plot([0, 0, 200, 200, 0], [0, 200, 200, 0, 0], pen='g')
+                self.plotW.setAspectLocked(lock=True, ratio=1)
+                self.tv.clear()
         self.tv.addTopLevelItem(self.root)
         self.tv.expandItem(self.root)
 
     def importFunc(self):
+        
         self.polylines = []
         # self.file_name = 'PLANdZ2.dxf'
         # self.w_file_dialog = QtWidgets.QMainWindow()
@@ -296,7 +333,8 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
 
     def __pntClicked(self, pnt):
         self.pnt_selection = int(pnt.opts.get('data'))
-        self.c.write('Pnt n°' + str(self.pnt_selection) + ' selected\n')
+        self.c.write('\nPnt n°' + str(self.pnt_selection) + ' selected\n')
+        self.ui_line_editor.le_selected_pnt.setText('Point n° ' + str(self.pnt_selection))
         # pass
 
     def scatterPoints(self, polyline):
@@ -313,8 +351,10 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
 
     def modify(self):
         # self.ui_line_editor = UI_LineEditor(self.w_line_editor, self)
+        print(self.w_line_editor.isVisible())
         self.w_line_editor.show()
-
+        self.ui_line_editor.isOpen = True
+        # print(self.ui_line_editor.isOpen)
         # self.drawing_pnt = []
         # for i in self.line_selection:
         #     self.__scatterPoints(self.polylines[i])
@@ -345,7 +385,7 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
         line_selected = self.line_selection
         for i in line_selected:
             len_polylines = len(self.polylines)
-            offset_lines = self.geo_tool.setThickness(self.polylines[i], self.th, 'alt')
+            offset_lines = self.geo_tool.setThickness(self.polylines[i], self.th, 'alt', self.offset)
             for offset_line in offset_lines:
                 self.polylines.append(offset_line)
 
