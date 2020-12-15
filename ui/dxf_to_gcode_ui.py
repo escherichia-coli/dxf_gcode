@@ -18,6 +18,8 @@ from ui.bin.g_code_process import GcodeProcess
 from ui.bin.dxf_to_gcode_geometry import DXFtoGCODE_Geometry
 from ui.dxf_to_gcode_line_editor import UI_LineEditor
 from ui.export_to_gcode_options import UI_DXF_to_Gcode_options
+from ui.dxf_to_gcode_choose_layer import DXFtoGCODEChooseLayers
+
 from ui.file_dialog.file_dialog_open_dxf import UI_OpenDXF
 from ui.file_dialog.file_dialog_open_nmodel import UI_OpenNMODEL
 from ui.file_dialog.file_dialog_save_gcode import UI_SaveGcode
@@ -156,10 +158,28 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
             sys.exit(2)
 
         msp = doc.modelspace()
+        psp = doc.layers
+        n_layer = len(doc.layers)
+        self.layer_to_display = [True]
+        layer_names = []
+        for layer in psp:
+            layer_names.append(layer.dxf.name)
+
+        if n_layer > 1:
+            self.c.write(str(n_layer) + ' layers have been detected.\nPlease select the layers to be displayed\n')
+            self.w_choose_layer = QtWidgets.QWidget()
+            self.choose_layer = DXFtoGCODEChooseLayers(self.w_choose_layer, self, layer_names)
+            self.w_choose_layer.show()
+
+            while len(self.layer_to_display) == 1:
+                QtCore.QCoreApplication.processEvents()
+
         i = 0
+        # for e in psp[0]:
         for e in msp:
             polyline = []
-            if e.dxftype() == 'LWPOLYLINE':
+            if e.dxftype() == 'LWPOLYLINE' and self.layer_to_display[layer_names.index(e.get_dxf_attrib("layer"))]:
+                # print(e.get_dxf_attrib("layer"))
                 # print(e.dxf.flags)
                 for f in e:
                     polyline.append([f[0], f[1]])
@@ -169,7 +189,7 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
             i = i + 1
         # self.polylines = self.geo_tool.clean(self.polylines)
         text = 'File ' + str(self.file_name) + ' loaded. \n'
-        text = text + str(i) + ' polylines succefully imported'
+        text = text + str(i) + ' polylines succefully imported\n'
         self.polylines_number = [i for i in range(len(self.polylines))]
         # print(self.polylines_number)
 
@@ -221,7 +241,6 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
 
     def __setTh(self):
         self.c.write('Set the offset thickness and press enter \n')
-        print(self.c.input.history[0])
         h_len = len(self.c.input.history)
         while self.c.input.history[0] != '' or len(self.c.input.history) == h_len:
             QtCore.QCoreApplication.processEvents()
@@ -293,7 +312,7 @@ class UI_DXF_to_Gcode(Ui_dxf_to_gcode):
         self.tv.expandItem(self.root)
 
     def importFunc(self):
-        
+
         self.polylines = []
         # self.file_name = 'PLANdZ2.dxf'
         # self.w_file_dialog = QtWidgets.QMainWindow()
